@@ -1,7 +1,7 @@
 import axios from "axios";
 import useSWR from "swr";
 
-const getExerciseData = async (url, trainerId) => {
+const getExerciseData = async (_, trainerId) => {
   const { data } = await axios.get(`/exercise?trainer=${trainerId}`);
   return data;
 };
