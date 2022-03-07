@@ -22,6 +22,7 @@ import { useContext, useEffect, useState } from "react";
 import { useSWRConfig } from "swr";
 import AppContext from "../../core/contexts/AppContext";
 import { date } from "../../utils/date";
+import ConfirmModal from "../components/confirmModal";
 import useExercise from "../lib/useExercise";
 import useExerciseCount from "../lib/useExerciseCount";
 
@@ -341,6 +342,7 @@ function ModalExercise({ modal, handleClose }) {
           </Stack>
         </form>
       </Box>
+      {/* <ConfirmModal modal={modal} handleClose={}/> */}
     </Modal>
   );
 }
