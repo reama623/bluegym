@@ -12,21 +12,28 @@ import {
   Box,
   Skeleton,
   Modal,
+  FormGroup,
+  TextField,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { useState } from "react";
+import axios from "axios";
+import { useSnackbar } from "notistack";
+import { useContext, useEffect, useState } from "react";
+import { useSWRConfig } from "swr";
+import AppContext from "../../core/contexts/AppContext";
 import { date } from "../../utils/date";
 import useExercise from "../lib/useExercise";
 import useExerciseCount from "../lib/useExerciseCount";
-import useUser from "../lib/useUser";
 
-const Item = styled(Paper)(({ theme }) => ({
-  backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
-  ...theme.typography.body2,
-  padding: theme.spacing(1),
-  textAlign: "center",
-  color: theme.palette.text.secondary,
-}));
+const Item = styled(Paper)(({ theme }) => {
+  return {
+    backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
+    ...theme.typography.body2,
+    padding: theme.spacing(1),
+    textAlign: "center",
+    color: theme.palette.text.secondary,
+  };
+});
 
 const StyledListItem = styled(ListItem)(({ theme }) => {
   return {
@@ -35,20 +42,27 @@ const StyledListItem = styled(ListItem)(({ theme }) => {
 });
 
 export default function Exercises() {
-  const { user, loading } = useUser("trainer1");
-  const { data, loading: c_loading } = useExerciseCount(user?.id);
+  const user = useContext(AppContext);
+  const { data, loading } = useExerciseCount(user?.id);
 
   const [modal, setModal] = useState({
-    create: {
-      open: false,
-    },
+    open: false,
+    type: "create",
   });
 
-  const handleModalOpen = (type) => {
-    setModal({ ...modal, [type]: { open: true } });
+  const handleModalOpen = (e, type, item) => {
+    const obj = { ...modal, open: true, type };
+    if (item) {
+      obj.item = item;
+    }
+    setModal(obj);
   };
-  const handleModalClose = (type) => {
-    setModal({ ...modal, [type]: { open: false } });
+  const handleModalClose = () => {
+    setModal({ ...modal, open: false });
+  };
+
+  const handleExerciseEdit = (e, item) => {
+    // setModal({ ...modal, open: true, type: "update", item });
   };
 
   return (
@@ -64,29 +78,29 @@ export default function Exercises() {
         </Grid>
         <Grid item xs={12} md={4}>
           <Item>
-            {loading ? (
-              <Skeleton variant="rectangular" />
+            {user ? (
+              <>
+                {loading ? (
+                  <Skeleton variant="rectangular" />
+                ) : (
+                  <Box>{user?.name} 님</Box>
+                )}
+                {loading ? (
+                  <Skeleton variant="rectangular" />
+                ) : (
+                  <Box>등록한 운동 개수 : {loading ? "-" : data?.count}</Box>
+                )}
+              </>
             ) : (
-              <Box>{user?.name} 님</Box>
-            )}
-            {c_loading ? (
-              <Skeleton variant="rectangular" />
-            ) : (
-              <Box>등록한 운동 개수 : {c_loading ? "-" : data?.count}</Box>
+              "로그인이 필요합니다"
             )}
           </Item>
         </Grid>
         <Grid item xs={12} md={12}>
-          <ExerciseList
-            trainer={user}
-            handleModalOpen={() => handleModalOpen("create")}
-          />
+          <ExerciseList trainer={user} handleModalOpen={handleModalOpen} />
         </Grid>
       </Grid>
-      <ModalCreateExercise
-        open={modal.create.open}
-        handleClose={() => handleModalClose("create")}
-      />
+      <ModalExercise modal={modal} handleClose={handleModalClose} />
     </>
   );
 }
@@ -110,7 +124,7 @@ function ExerciseList({ trainer, handleModalOpen }) {
             variant="contained"
             color="info"
             size="small"
-            onClick={handleModalOpen}
+            onClick={(e) => handleModalOpen(e, "create")}
           >
             운동 추가
           </Button>
@@ -118,28 +132,43 @@ function ExerciseList({ trainer, handleModalOpen }) {
         <Box sx={{ m: "10px 0", height: 10 }}>
           {e_loading && <LinearProgress />}
         </Box>
-        <ListComponent items={exercise} />
+        {e_loading ? (
+          <>
+            <Skeleton animation="wave" />
+            <Skeleton animation="wave" />
+            <Skeleton animation="wave" />
+            <Skeleton animation="wave" />
+          </>
+        ) : (
+          <ListComponent items={exercise} handleClick={handleModalOpen} />
+        )}
       </Stack>
       {/* <DataTable data={exercise} /> */}
     </Item>
   );
 }
 
-function ListComponent({ items }) {
+function ListComponent({ items, handleClick }) {
   return (
     <List>
       {items?.map((item) => (
-        <ListComponentItem key={item.uid} item={item} />
+        <ListComponentItem
+          key={item.uid}
+          item={item}
+          handleClick={handleClick}
+        />
       ))}
     </List>
   );
 }
 
-function ListComponentItem({ item }) {
+function ListComponentItem({ item, handleClick }) {
+  const label = item.category === "" ? "-" : item.category;
   return (
-    <StyledListItem>
+    // <StyledListItem onClick={(e) => handleClick(e, "update", item)}>
+    <StyledListItem onClick={(e) => handleClick(e, "update", item)}>
       <Stack direction="row" spacing={2} alignItems="center">
-        <Chip label={item.category} sx={{ width: 50, maxWidth: 100 }} />
+        <Chip label={label} sx={{ width: 50, maxWidth: 100 }} />
         <ListItemText>{item.name}</ListItemText>
       </Stack>
     </StyledListItem>
@@ -157,21 +186,160 @@ const style = {
   p: 4,
 };
 
-function ModalCreateExercise({ open, handleClose }) {
+function ModalExercise({ modal, handleClose }) {
+  const user = useContext(AppContext);
+  const { enqueueSnackbar } = useSnackbar();
+  const { mutate } = useSWRConfig();
+
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [category, setCategory] = useState("");
+
+  const handleTitle = (e) => {
+    setTitle(e.target.value);
+  };
+  const handleDescription = (e) => {
+    setDescription(e.target.value);
+  };
+  const handleCategory = (e) => {
+    setCategory(e.target.value);
+  };
+
+  const initializeState = () => {
+    setTitle("");
+    setDescription("");
+    setCategory("");
+  };
+
+  const closeProcess = () => {
+    mutate(["getExercise", user.id]);
+    mutate(["getExerciseCount", user.id]);
+    handleClose();
+
+    initializeState();
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (title === "") {
+      enqueueSnackbar("운동 이름을 입력해주세요", {
+        variant: "warning",
+        anchorOrigin: { horizontal: "right", vertical: "top" },
+        preventDuplicate: true,
+      });
+      return;
+    }
+    try {
+      const data = {
+        name: title,
+        desc: description,
+        category,
+        trainerId: user.id,
+        groupId: user.group,
+      };
+      await axios.post("/exercise", data);
+      enqueueSnackbar("운동 생성 완료", { variant: "success" });
+
+      closeProcess();
+    } catch (error) {
+      enqueueSnackbar("운동 생성 실패", { variant: "error" });
+    }
+  };
+
+  const handleDeleteExercise = async (e, { uid }) => {
+    try {
+      await axios.delete(`/exercise?id=${uid}`);
+      enqueueSnackbar("운동 삭제 완료", { variant: "success" });
+      closeProcess();
+    } catch (error) {
+      enqueueSnackbar("운동 삭제 실패", { variant: "error" });
+    }
+  };
+
+  useEffect(() => {
+    if (modal.type === "update") {
+      const { name, desc, category } = modal.item;
+      setTitle(name);
+      setDescription(desc);
+      setCategory(category);
+    }
+    if (!modal.open) {
+      initializeState();
+    }
+  }, [modal]);
   return (
     <Modal
-      open={open}
-      onClose={handleClose}
+      open={modal.open}
+      onClose={() => handleClose()}
       aria-labelledby="exercise-create-modal"
       // aria-describedby="modal-modal-description"
     >
       <Box sx={style}>
-        <Typography id="modal-modal-title" variant="h6" component="h2">
-          Text in a modal
+        <Typography
+          id="modal-modal-title"
+          variant="h6"
+          component="h2"
+          sx={{ color: "white" }}
+        >
+          {modal.type === "create" && "운동 생성"}
+          {modal.type === "update" && "운동 수정"}
         </Typography>
-        <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-          Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
-        </Typography>
+        <form onSubmit={handleSubmit}>
+          <TextField
+            id="create-exercise-title"
+            label="운동 이름"
+            variant="outlined"
+            margin="normal"
+            fullWidth
+            value={title}
+            onChange={handleTitle}
+          />
+          <TextField
+            id="create-exercise-description"
+            multiline
+            maxRows={6}
+            label="운동 설명"
+            variant="outlined"
+            margin="normal"
+            fullWidth
+            value={description}
+            onChange={handleDescription}
+          />
+          <TextField
+            id="create-exercise-category"
+            multiline
+            maxRows={6}
+            label="운동 분류"
+            variant="outlined"
+            margin="normal"
+            fullWidth
+            value={category}
+            onChange={handleCategory}
+          />
+          <Stack direction="row" justifyContent="flex-end" sx={{ mt: 2 }}>
+            {modal.type === "update" && (
+              <Button
+                variant="contained"
+                color="warning"
+                sx={{ mr: 2 }}
+                onClick={(e) => handleDeleteExercise(e, modal.item)}
+              >
+                삭제
+              </Button>
+            )}
+            <Button
+              variant="contained"
+              color="error"
+              sx={{ mr: 2 }}
+              onClick={handleClose}
+            >
+              취소
+            </Button>
+            <Button variant="contained" color="primary" type="submit">
+              저장
+            </Button>
+          </Stack>
+        </form>
       </Box>
     </Modal>
   );

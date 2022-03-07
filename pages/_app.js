@@ -1,22 +1,30 @@
 import { createTheme, ThemeProvider } from "@mui/material";
 import axios from "axios";
+import { SnackbarProvider } from "notistack";
+import AppContext from "../core/contexts/AppContext";
 import "../styles/globals.css";
 import Layout from "./components/layout";
+import useUser from "./lib/useUser";
 
 axios.defaults.baseURL = "http://localhost:3000/api";
 
 function MyApp({ Component, pageProps }) {
+  const { user } = useUser("trainer1");
   const theme = createTheme({
     palette: {
       mode: "dark",
     },
   });
   return (
-    <ThemeProvider theme={theme}>
-      <Layout>
-        <Component {...pageProps} />
-      </Layout>
-    </ThemeProvider>
+    <AppContext.Provider value={user}>
+      <SnackbarProvider maxSnack={4} autoHideDuration={2000}>
+        <ThemeProvider theme={theme}>
+          <Layout>
+            <Component {...pageProps} />
+          </Layout>
+        </ThemeProvider>
+      </SnackbarProvider>
+    </AppContext.Provider>
   );
 }
 

@@ -14,6 +14,17 @@ export default async function handler(req, res) {
     const d = await createExercise(body);
     return res.status(200).json(d);
   }
+
+  if (method === "PATCH") {
+    const d = await updateExercise(body);
+    return res.status(200).json(d);
+  }
+
+  if (method === "DELETE") {
+    const { id } = query;
+    const d = await deleteExercise(id);
+    return res.status(200).json(d);
+  }
 }
 
 async function getExercises(trainer) {
@@ -24,10 +35,23 @@ async function getExercises(trainer) {
   return d;
 }
 
-async function createExercise({ name, desc, trainer, group, category }) {
+async function createExercise({ name, desc, trainerId, groupId, category }) {
   const d = await request(
     `INSERT INTO bluegym.exercise (name,\`desc\`,trainer_id,group_id,category) VALUES (?,?,?,?,?)`,
-    [name, desc, trainer, group, category]
+    [name, desc, trainerId, groupId, category]
   );
+  return d;
+}
+
+async function updateExercise({ name, desc, category, trainerId }) {
+  const d = await request(
+    `INSERT INTO bluegym.exercise (name,\`desc\`,trainer_id,group_id,category) VALUES (?,?,?,?,?)`,
+    [name, desc, trainerId, groupId, category]
+  );
+  return d;
+}
+
+async function deleteExercise(id) {
+  const d = await request(`delete from exercise where uid=${id}`, [id]);
   return d;
 }
