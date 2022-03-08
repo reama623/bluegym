@@ -196,6 +196,13 @@ function ModalExercise({ modal, handleClose }) {
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
 
+  const [childModal, setChildModal] = useState({
+    open: false,
+    type: "update",
+  });
+
+  const handleCloseChildModal = (e) => {};
+
   const handleTitle = (e) => {
     setTitle(e.target.value);
   };
@@ -220,7 +227,7 @@ function ModalExercise({ modal, handleClose }) {
     initializeState();
   };
 
-  const handleSubmit = async (e) => {
+  const handleCreateExercise = async (e) => {
     e.preventDefault();
     if (title === "") {
       enqueueSnackbar("운동 이름을 입력해주세요", {
@@ -257,6 +264,25 @@ function ModalExercise({ modal, handleClose }) {
     }
   };
 
+  const handleUpdateExercise = async (e) => {
+    e.preventDefault();
+    try {
+      const data = {
+        uid: modal.item.uid,
+        name: title,
+        desc: description,
+        category,
+        trainerId: user.id,
+        groupId: user.group,
+      };
+      await axios.patch(`/exercise`, data);
+      enqueueSnackbar("운동 수정 완료", { variant: "success" });
+      closeProcess();
+    } catch (error) {
+      enqueueSnackbar("운동 수정 실패", { variant: "error" });
+    }
+  };
+
   useEffect(() => {
     if (modal.type === "update") {
       const { name, desc, category } = modal.item;
@@ -268,6 +294,15 @@ function ModalExercise({ modal, handleClose }) {
       initializeState();
     }
   }, [modal]);
+
+  const handleSubmit = () => {
+    if (modal.type === "create") {
+      return handleCreateExercise;
+    }
+    if (modal.type === "update") {
+      return handleUpdateExercise;
+    }
+  };
   return (
     <Modal
       open={modal.open}
@@ -285,7 +320,7 @@ function ModalExercise({ modal, handleClose }) {
           {modal.type === "create" && "운동 생성"}
           {modal.type === "update" && "운동 수정"}
         </Typography>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit()}>
           <TextField
             id="create-exercise-title"
             label="운동 이름"
@@ -337,12 +372,12 @@ function ModalExercise({ modal, handleClose }) {
               취소
             </Button>
             <Button variant="contained" color="primary" type="submit">
-              저장
+              {modal.type === "update" ? "수정" : "저장"}
             </Button>
           </Stack>
         </form>
       </Box>
-      {/* <ConfirmModal modal={modal} handleClose={}/> */}
+      {/* <ConfirmModal modal={childModal} handleClose={handleCloseChildModal} /> */}
     </Modal>
   );
 }

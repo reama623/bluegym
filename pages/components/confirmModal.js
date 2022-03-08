@@ -1,4 +1,4 @@
-import { Box, Button, Modal } from "@mui/material";
+import { Box, Button, Modal, Backdrop } from "@mui/material";
 
 export default function ConfirmModal({
   type,
@@ -16,8 +16,13 @@ export default function ConfirmModal({
       hideBackdrop
       open={modal.open}
       onClose={handleClose}
-      aria-labelledby="child-modal-title"
-      aria-describedby="child-modal-description"
+      aria-labelledby="child-modal-confirm"
+      aria-describedby="child-modal-confirm"
+      closeAfterTransition
+      BackdropComponent={Backdrop}
+      BackdropProps={{
+        timeout: 500,
+      }}
     >
       <form onSubmit={handleSubmit}>
         <Box sx={{ ...style, width: 200 }}>

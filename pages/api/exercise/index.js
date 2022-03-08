@@ -43,10 +43,17 @@ async function createExercise({ name, desc, trainerId, groupId, category }) {
   return d;
 }
 
-async function updateExercise({ name, desc, category, trainerId }) {
+async function updateExercise({
+  uid,
+  name,
+  desc,
+  category,
+  groupId,
+  trainerId,
+}) {
   const d = await request(
-    `INSERT INTO bluegym.exercise (name,\`desc\`,trainer_id,group_id,category) VALUES (?,?,?,?,?)`,
-    [name, desc, trainerId, groupId, category]
+    `update exercise set name=?, \`desc\`=?, category=? where uid = ? and trainer_id=? and group_id =?;`,
+    [name, desc, category, uid, trainerId, groupId]
   );
   return d;
 }
