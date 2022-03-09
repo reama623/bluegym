@@ -62,10 +62,6 @@ export default function Exercises() {
     setModal({ ...modal, open: false });
   };
 
-  const handleExerciseEdit = (e, item) => {
-    // setModal({ ...modal, open: true, type: "update", item });
-  };
-
   return (
     <>
       <Grid container spacing={2}>
@@ -101,7 +97,11 @@ export default function Exercises() {
           <ExerciseList trainer={user} handleModalOpen={handleModalOpen} />
         </Grid>
       </Grid>
-      <ModalExercise modal={modal} handleClose={handleModalClose} />
+      <ModalExercise
+        modal={modal}
+        handleModal={handleModalOpen}
+        handleClose={handleModalClose}
+      />
     </>
   );
 }
@@ -167,7 +167,7 @@ function ListComponentItem({ item, handleClick }) {
   const label = item.category === "" ? "-" : item.category;
   return (
     // <StyledListItem onClick={(e) => handleClick(e, "update", item)}>
-    <StyledListItem onClick={(e) => handleClick(e, "update", item)}>
+    <StyledListItem onClick={(e) => handleClick(e, "view", item)}>
       <Stack direction="row" spacing={2} alignItems="center">
         <Chip label={label} sx={{ width: 50, maxWidth: 100 }} />
         <ListItemText>{item.name}</ListItemText>
@@ -187,7 +187,7 @@ const style = {
   p: 4,
 };
 
-function ModalExercise({ modal, handleClose }) {
+function ModalExercise({ modal, handleModal, handleClose }) {
   const user = useContext(AppContext);
   const { enqueueSnackbar } = useSnackbar();
   const { mutate } = useSWRConfig();
@@ -295,13 +295,17 @@ function ModalExercise({ modal, handleClose }) {
     }
   }, [modal]);
 
-  const handleSubmit = () => {
+  const handleSubmit = (e) => {
     if (modal.type === "create") {
       return handleCreateExercise;
     }
     if (modal.type === "update") {
       return handleUpdateExercise;
     }
+  };
+
+  const handleModalType = (e, type) => {
+    handleModal(e, type);
   };
   return (
     <Modal
@@ -321,63 +325,142 @@ function ModalExercise({ modal, handleClose }) {
           {modal.type === "update" && "운동 수정"}
         </Typography>
         <form onSubmit={handleSubmit()}>
-          <TextField
-            id="create-exercise-title"
-            label="운동 이름"
-            variant="outlined"
-            margin="normal"
-            fullWidth
-            value={title}
-            onChange={handleTitle}
-          />
-          <TextField
-            id="create-exercise-description"
-            multiline
-            maxRows={6}
-            label="운동 설명"
-            variant="outlined"
-            margin="normal"
-            fullWidth
-            value={description}
-            onChange={handleDescription}
-          />
-          <TextField
-            id="create-exercise-category"
-            multiline
-            maxRows={6}
-            label="운동 분류"
-            variant="outlined"
-            margin="normal"
-            fullWidth
-            value={category}
-            onChange={handleCategory}
-          />
+          {modal.type === "view" && (
+            <ExerciseDisplay
+              title={modal.item.name}
+              description={modal.item.desc}
+              category={modal.item.category}
+              // handleUpdateView={handleUpdateView}
+            />
+          )}
+          {(modal.type === "update" || modal.type === "create") && (
+            <ExerciseUpdateView
+              title={title}
+              description={description}
+              category={category}
+              handleTitle={handleTitle}
+              handleDescription={handleDescription}
+              handleCategory={handleCategory}
+            />
+          )}
+
           <Stack direction="row" justifyContent="flex-end" sx={{ mt: 2 }}>
-            {modal.type === "update" && (
-              <Button
-                variant="contained"
-                color="warning"
-                sx={{ mr: 2 }}
-                onClick={(e) => handleDeleteExercise(e, modal.item)}
-              >
-                삭제
-              </Button>
+            {(modal.type === "create" || modal.type === "update") && (
+              <>
+                <Button
+                  variant="contained"
+                  color="error"
+                  sx={{ mr: 2 }}
+                  onClick={(e) => handleModalType(e, "view")}
+                >
+                  취소
+                </Button>
+                <Button variant="contained" color="primary" type="submit">
+                  저장
+                </Button>
+              </>
             )}
-            <Button
-              variant="contained"
-              color="error"
-              sx={{ mr: 2 }}
-              onClick={handleClose}
-            >
-              취소
-            </Button>
-            <Button variant="contained" color="primary" type="submit">
-              {modal.type === "update" ? "수정" : "저장"}
-            </Button>
+
+            {modal.type === "view" && (
+              <>
+                <Button
+                  variant="contained"
+                  color="warning"
+                  sx={{ mr: 2 }}
+                  onClick={(e) => handleDeleteExercise(e, modal.item)}
+                >
+                  삭제
+                </Button>
+
+                <Button
+                  variant="contained"
+                  color="primary"
+                  sx={{ mr: 2 }}
+                  onClick={(e) => handleModalType(e, "update")}
+                >
+                  수정
+                </Button>
+                <Button variant="contained" color="error" onClick={handleClose}>
+                  닫기
+                </Button>
+              </>
+            )}
           </Stack>
         </form>
       </Box>
       {/* <ConfirmModal modal={childModal} handleClose={handleCloseChildModal} /> */}
     </Modal>
+  );
+}
+
+function ExerciseUpdateView({
+  title,
+  description,
+  category,
+  handleTitle,
+  handleDescription,
+  handleCategory,
+}) {
+  return (
+    <>
+      <TextField
+        id="create-exercise-title"
+        label="운동 이름"
+        variant="outlined"
+        margin="normal"
+        fullWidth
+        value={title}
+        onChange={handleTitle}
+      />
+      <TextField
+        id="create-exercise-description"
+        multiline
+        maxRows={6}
+        label="운동 설명"
+        variant="outlined"
+        margin="normal"
+        fullWidth
+        value={description}
+        onChange={handleDescription}
+      />
+      <TextField
+        id="create-exercise-category"
+        multiline
+        maxRows={6}
+        label="운동 분류"
+        variant="outlined"
+        margin="normal"
+        fullWidth
+        value={category}
+        onChange={handleCategory}
+      />
+    </>
+  );
+}
+
+function ExerciseDisplay({ title, description, category }) {
+  return (
+    <Box>
+      <Stack>
+        <Box>
+          <Typography sx={{ color: "white", fontWeight: 600 }}>
+            운동 이름
+          </Typography>
+          <Typography sx={{ color: "white" }}>{title}</Typography>
+        </Box>
+        <Box sx={{ m: "5px 0" }}>
+          <Typography sx={{ color: "white", fontWeight: 600 }}>
+            운동 설명
+          </Typography>
+          <Typography sx={{ color: "white" }}>{description}</Typography>
+        </Box>
+        <Box>
+          <Typography sx={{ color: "white", fontWeight: 600 }}>
+            운동 분류
+          </Typography>
+          <Typography sx={{ color: "white" }}>{category}</Typography>
+        </Box>
+      </Stack>
+    </Box>
   );
 }
