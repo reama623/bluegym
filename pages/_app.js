@@ -3,7 +3,7 @@ import axios from "axios";
 import { SnackbarProvider } from "notistack";
 import AppContext from "../core/contexts/AppContext";
 import "../styles/globals.css";
-import Layout from "./components/layout";
+import Layout from "./components/layout/layout";
 import useUser from "./lib/useUser";
 
 axios.defaults.baseURL = "http://localhost:3000/api";

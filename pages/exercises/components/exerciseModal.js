@@ -10,18 +10,7 @@ import { useSnackbar } from "notistack";
 import { useContext, useEffect, useState } from "react";
 import { useSWRConfig } from "swr";
 import AppContext from "../../../core/contexts/AppContext";
-
-const style = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 400,
-  bgcolor: "background.paper",
-  border: "2px solid #000",
-  boxShadow: 24,
-  p: 4,
-};
+import { modalStyle } from "../../components/styleds";
 
 export default function ExerciseModal({ modal, handleModal, handleClose }) {
   const user = useContext(AppContext);
@@ -143,7 +132,7 @@ export default function ExerciseModal({ modal, handleModal, handleClose }) {
       aria-labelledby="exercise-create-modal"
       // aria-describedby="modal-modal-description"
     >
-      <Box sx={style}>
+      <Box sx={modalStyle}>
         <Typography
           id="modal-modal-title"
           variant="h6"
