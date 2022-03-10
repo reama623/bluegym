@@ -9,9 +9,13 @@ import {
   TablePagination,
   TableRow,
 } from "@mui/material";
-// import { dateUtil } from "../../utils/date";
 
-export default function BluegymTable({ loading, columns, rows }) {
+export default function BluegymTable({
+  loading,
+  columns,
+  rows,
+  handleRowClick,
+}) {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
@@ -56,7 +60,13 @@ export default function BluegymTable({ loading, columns, rows }) {
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, i) => {
                   return (
-                    <TableRow hover role="checkbox" tabIndex={-1} key={i}>
+                    <TableRow
+                      hover
+                      role="checkbox"
+                      tabIndex={-1}
+                      key={i}
+                      onClick={(e) => handleRowClick(e, row)}
+                    >
                       {columns.map(({ id, format, align, type }) => {
                         let value = row[id];
                         return (
