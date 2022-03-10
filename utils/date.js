@@ -7,11 +7,11 @@ function today() {
   return format(new Date(), "PPP", { locale });
 }
 
-function foramtDate(date, format = "yyyy-MM-dd") {
-  return format(new Date(date), format);
+function formatDate(date, formatString = "yyyy-MM-dd") {
+  return format(new Date(date), formatString);
 }
 
-export const date = {
+export const dateUtil = {
   today,
-  foramtDate,
+  formatDate,
 };

@@ -4,12 +4,12 @@ import { SnackbarProvider } from "notistack";
 import AppContext from "../core/contexts/AppContext";
 import "../styles/globals.css";
 import Layout from "./components/layout/layout";
-import useUser from "./lib/useUser";
+import useLogin from "./lib/useLogin";
 
 axios.defaults.baseURL = "http://localhost:3000/api";
 
 function MyApp({ Component, pageProps }) {
-  const { user } = useUser("trainer1");
+  const { user } = useLogin("trainer1");
   const theme = createTheme({
     palette: {
       mode: "dark",
