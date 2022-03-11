@@ -4,7 +4,7 @@ import { SnackbarProvider } from "notistack";
 import AppContext from "../core/contexts/AppContext";
 import "../styles/globals.css";
 import Layout from "./components/layout/layout";
-import useLogin from "./lib/useLogin";
+import useLogin from "../effects/useLogin";
 
 axios.defaults.baseURL = "http://localhost:3000/api";
 

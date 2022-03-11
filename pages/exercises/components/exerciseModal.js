@@ -6,11 +6,13 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import axios from "axios";
 import { useSnackbar } from "notistack";
 import { useContext, useEffect, useState } from "react";
 import { useSWRConfig } from "swr";
 import AppContext from "../../../core/contexts/AppContext";
 import { modalStyle } from "../../components/styleds";
+import BluegymButton from "../../components/bluegymButton";
 
 export default function ExerciseModal({ modal, handleModal, handleClose }) {
   const user = useContext(AppContext);
@@ -78,6 +80,7 @@ export default function ExerciseModal({ modal, handleModal, handleClose }) {
       enqueueSnackbar("운동 삭제 완료", { variant: "success" });
       closeProcess();
     } catch (error) {
+      console.log(error);
       enqueueSnackbar("운동 삭제 실패", { variant: "error" });
     }
   };
@@ -163,44 +166,45 @@ export default function ExerciseModal({ modal, handleModal, handleClose }) {
           )}
 
           <Stack direction="row" justifyContent="flex-end" sx={{ mt: 2 }}>
-            {(modal.type === "create" || modal.type === "update") && (
+            {modal.type === "update" && (
               <>
-                <Button
-                  variant="contained"
+                <BluegymButton
                   color="error"
                   sx={{ mr: 2 }}
                   onClick={(e) => handleModalType(e, "view")}
                 >
                   취소
-                </Button>
-                <Button variant="contained" color="primary" type="submit">
-                  저장
-                </Button>
+                </BluegymButton>
+                <BluegymButton type="submit">저장</BluegymButton>
+              </>
+            )}
+            {modal.type === "create" && (
+              <>
+                <BluegymButton color="error" sx={{ mr: 2 }}>
+                  취소
+                </BluegymButton>
+                <BluegymButton type="submit">저장</BluegymButton>
               </>
             )}
 
             {modal.type === "view" && (
               <>
-                <Button
-                  variant="contained"
+                <BluegymButton
                   color="warning"
-                  sx={{ mr: 2 }}
                   onClick={(e) => handleDeleteExercise(e, modal.item)}
                 >
                   삭제
-                </Button>
-
-                <Button
-                  variant="contained"
+                </BluegymButton>
+                <BluegymButton
                   color="primary"
-                  sx={{ mr: 2 }}
                   onClick={(e) => handleModalType(e, "update")}
+                  sx={{ margin: "0 10px" }}
                 >
                   수정
-                </Button>
-                <Button variant="contained" color="error" onClick={handleClose}>
-                  닫기
-                </Button>
+                </BluegymButton>
+                <BluegymButton color="error" onClick={handleClose}>
+                  취소
+                </BluegymButton>
               </>
             )}
           </Stack>

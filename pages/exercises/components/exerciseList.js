@@ -8,8 +8,8 @@ import {
 } from "@mui/material";
 import { useContext } from "react";
 import AppContext from "../../../core/contexts/AppContext";
+import useExercise from "../../../effects/useExercise";
 import { Item } from "../../components/styleds";
-import useExercise from "../../lib/useExercise";
 import ListComponent from "./listComponent";
 
 /**
