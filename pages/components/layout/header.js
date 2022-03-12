@@ -15,7 +15,7 @@ import {
 import MenuIcon from "@mui/icons-material/Menu";
 import Link from "next/link";
 
-const pages = ["exercises", "members"];
+const pages = ["exercises", "members", "manage"];
 const settings = ["Profile", "Account", "Dashboard", "Logout"];
 
 export default function Header() {
