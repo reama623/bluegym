@@ -9,7 +9,7 @@ import {
 import { useContext } from "react";
 import AppContext from "../../../core/contexts/AppContext";
 import useExercise from "../../../effects/useExercise";
-import { Item } from "../../components/styleds";
+import { Item } from "../../../components/styleds";
 import ListComponent from "./listComponent";
 
 /**
@@ -17,7 +17,7 @@ import ListComponent from "./listComponent";
  */
 export default function ExerciseList({ handleModalOpen }) {
   const user = useContext(AppContext);
-  const { exercise, e_loading } = useExercise(user?.id);
+  const { data: exercise, e_loading } = useExercise(user?.id);
   return (
     <Item>
       <Stack>

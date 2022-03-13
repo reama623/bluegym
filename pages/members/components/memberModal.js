@@ -12,8 +12,8 @@ import { useContext, useEffect, useState } from "react";
 import { useSWRConfig } from "swr";
 import AppContext from "../../../core/contexts/AppContext";
 import { dateUtil } from "../../../utils/date";
-import BluegymButton from "../../components/bluegymButton";
-import { modalStyle } from "../../components/styleds";
+import BluegymButton from "../../../components/bluegymButton";
+import { modalStyle } from "../../../components/styleds";
 
 export default function UserModal({ modal, handleClose, handleModal }) {
   const { enqueueSnackbar } = useSnackbar();

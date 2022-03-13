@@ -7,11 +7,15 @@ const getExerciseData = async (_, trainerId) => {
 };
 
 export default function useExercise(trainerId) {
-  const { data, error } = useSWR(["getExercise", trainerId], getExerciseData, {
-    dedupingInterval: 1000 * 10,
-  });
+  const { data, error } = useSWR(
+    trainerId ? ["getExercise", trainerId] : null,
+    getExerciseData,
+    {
+      dedupingInterval: 1000 * 10,
+    }
+  );
 
   const loading = !data && !error;
 
-  return { exercise: data, loading };
+  return { data, loading };
 }

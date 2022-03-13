@@ -2,7 +2,7 @@ import { Box, Skeleton } from "@mui/material";
 import { useContext } from "react";
 import AppContext from "../../../core/contexts/AppContext";
 import useExerciseCount from "../../../effects/useExerciseCount";
-import { Item } from "../../components/styleds";
+import { Item } from "../../../components/styleds";
 
 export default function ExerciseHeaderInfo() {
   const user = useContext(AppContext);

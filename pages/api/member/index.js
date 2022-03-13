@@ -23,7 +23,7 @@ export default async function handler(req, res) {
 
 const getMembers = async (trainer) => {
   const d = await request(
-    `select uid, id, name, created_at, group_id as \`group\` from member where trainer_id=?`,
+    `select seq, id, name, created_at, group_id as \`group\` from member where trainer_id=?`,
     [trainer]
   );
   return d;

@@ -1,12 +1,12 @@
 import { Chip, List, ListItemText, Stack } from "@mui/material";
-import { StyledListItem } from "../../components/styleds";
+import { StyledListItem } from "../../../components/styleds";
 
 export default function ListComponent({ items, handleClick }) {
   return (
     <List>
       {items?.map((item) => (
         <ListComponentItem
-          key={item.uid}
+          key={item.seq}
           item={item}
           handleClick={handleClick}
         />

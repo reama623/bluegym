@@ -11,8 +11,8 @@ import { useSnackbar } from "notistack";
 import { useContext, useEffect, useState } from "react";
 import { useSWRConfig } from "swr";
 import AppContext from "../../../core/contexts/AppContext";
-import { modalStyle } from "../../components/styleds";
-import BluegymButton from "../../components/bluegymButton";
+import { modalStyle } from "../../../components/styleds";
+import BluegymButton from "../../../components/bluegymButton";
 
 export default function ExerciseModal({ modal, handleModal, handleClose }) {
   const user = useContext(AppContext);
@@ -74,9 +74,9 @@ export default function ExerciseModal({ modal, handleModal, handleClose }) {
     }
   };
 
-  const handleDeleteExercise = async (e, { uid }) => {
+  const handleDeleteExercise = async (e, { seq }) => {
     try {
-      await axios.delete(`/exercise?id=${uid}`);
+      await axios.delete(`/exercise?id=${seq}`);
       enqueueSnackbar("운동 삭제 완료", { variant: "success" });
       closeProcess();
     } catch (error) {
@@ -89,7 +89,7 @@ export default function ExerciseModal({ modal, handleModal, handleClose }) {
     e.preventDefault();
     try {
       const data = {
-        uid: modal.item.uid,
+        seq: modal.item.seq,
         name: title,
         desc: description,
         category,

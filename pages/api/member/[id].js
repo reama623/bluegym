@@ -24,10 +24,10 @@ export default async function handler(req, res) {
 
 const getMember = async (id) => {
   const d = await request(
-    "select id, name, trainer_id as trainer, group_id as group from member where id=?",
+    "select id, name, trainer_id as trainer, group_id as \`group\` from member where id=?",
     [id]
   );
-  return d;
+  return d[0];
 };
 
 const updateMember = async ({ id, name }) => {

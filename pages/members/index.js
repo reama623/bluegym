@@ -3,8 +3,8 @@ import { useContext, useState } from "react";
 import AppContext from "../../core/contexts/AppContext";
 import useMembers from "../../effects/useMembers";
 import { dateUtil } from "../../utils/date";
-import BluegymTable from "../components/BluegymTable";
-import PageHeader from "../components/pageHead";
+import BluegymTable from "../../components/BluegymTable";
+import PageHeader from "../../components/pageHeader";
 import MemberModal from "./components/memberModal";
 
 const columns = [

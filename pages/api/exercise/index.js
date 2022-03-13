@@ -29,7 +29,7 @@ export default async function handler(req, res) {
 
 async function getExercises(trainer) {
   const d = await request(
-    "select uid, name, `desc`, category from exercise where trainer_id=?",
+    "select seq, name, `desc`, category from exercise where trainer_id=?",
     [trainer]
   );
   return d;
@@ -44,7 +44,7 @@ async function createExercise({ name, desc, trainerId, groupId, category }) {
 }
 
 async function updateExercise({
-  uid,
+  seq,
   name,
   desc,
   category,
@@ -52,13 +52,13 @@ async function updateExercise({
   trainerId,
 }) {
   const d = await request(
-    `update exercise set name=?, \`desc\`=?, category=? where uid = ? and trainer_id=? and group_id =?;`,
-    [name, desc, category, uid, trainerId, groupId]
+    `update exercise set name=?, \`desc\`=?, category=? where seq = ? and trainer_id=? and group_id =?;`,
+    [name, desc, category, seq, trainerId, groupId]
   );
   return d;
 }
 
 async function deleteExercise(id) {
-  const d = await request(`delete from exercise where uid=${id}`, [id]);
+  const d = await request(`delete from exercise where seq=${id}`, [id]);
   return d;
 }

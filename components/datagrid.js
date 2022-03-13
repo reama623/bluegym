@@ -31,7 +31,7 @@ const columns = [
  */
 
 export default function DataTable({ data, loading }) {
-  const rowData = data?.map((d, num) => ({ ...d, num, id: d.uid })) || [];
+  const rowData = data?.map((d, num) => ({ ...d, num, id: d.seq })) || [];
   return (
     <div style={{ height: 400, width: "100%" }}>
       <DataGrid

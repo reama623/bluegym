@@ -11,7 +11,7 @@ export default async function handler(req, res) {
   if (method === "POST") {
     const { loginuser } = body;
     const d = await request(
-      "select id, name, group_id as \`group\` from trainer where id=?",
+      "select id, name, group_id as `group`, data from trainer where id=?",
       [loginuser]
     );
     return res.status(200).json(d);

@@ -1,17 +1,21 @@
 import {
   Autocomplete,
   Box,
+  Button,
   Chip,
   Grid,
   Stack,
   TextField,
   Typography,
 } from "@mui/material";
+import { useRouter } from "next/router";
 import { useContext, useState } from "react";
 import AppContext from "../../core/contexts/AppContext";
 import useMembers from "../../effects/useMembers";
-import PageHeader from "../components/pageHead";
-import { Item } from "../components/styleds";
+import BluegymButton from "../../components/bluegymButton";
+import PageHeader from "../../components/pageHeader";
+import { Item } from "../../components/styleds";
+import BluegymAutocomplete from "../../components/bluegymAutocomplete";
 
 export default function Manage() {
   const [selectMember, setSelectMember] = useState(null);
@@ -43,18 +47,36 @@ function UserChip({ name, ...props }) {
 }
 
 function UsersOfTrainer({ member, handleClick }) {
+  const { push } = useRouter();
   const user = useContext(AppContext);
   const { data, loading, error } = useMembers(user?.id);
+
+  const handleAddExercise = (e) => {
+    push(`/manage/create/${member.id}`);
+  };
   return (
-    <Autocomplete
-      sx={{ width: 300 }}
-      size="small"
-      loading={loading}
-      options={error ? [{ name: "에러 발생" }] : data}
-      getOptionLabel={({ name }) => name}
-      renderInput={(params) => <TextField {...params} />}
-      onChange={(e, member) => handleClick(e, member)}
-    />
+    <Stack direction="row" spacing={2}>
+      {/* <Autocomplete
+        sx={{ width: 300 }}
+        size="small"
+        loading={loading}
+        placeholder="회원을 선택해주세요"
+        options={data}
+        getOptionLabel={({ name }) => name}
+        renderInput={(params) => <TextField {...params} />}
+        onChange={(e, member) => handleClick(e, member)}
+      /> */}
+      <BluegymAutocomplete
+        loading={loading}
+        placeholder="회원을 선택해주세요"
+        options={data}
+        onChange={handleClick}
+        getOptionLabel={({ name }) => name}
+      />
+      {member && (
+        <BluegymButton onClick={handleAddExercise}>운동 추가</BluegymButton>
+      )}
+    </Stack>
   );
 }
 

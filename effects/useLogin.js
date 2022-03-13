@@ -5,7 +5,14 @@ const getUserData = async (url, loginuser) => {
   const { data } = await axios.post("/login", {
     loginuser,
   });
-  return data[0];
+  try {
+    const parseData = { ...data[0], data: JSON.parse(data[0]?.data) };
+
+    return parseData;
+  } catch (error) {
+    console.error(error);
+    return data[0];
+  }
 };
 
 export default function useUser(id) {
