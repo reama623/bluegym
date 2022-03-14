@@ -9,7 +9,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useRouter } from "next/router";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import AppContext from "../../core/contexts/AppContext";
 import useMembers from "../../effects/useMembers";
 import BluegymButton from "../../components/bluegymButton";
@@ -18,10 +18,24 @@ import { Item } from "../../components/styleds";
 import BluegymAutocomplete from "../../components/bluegymAutocomplete";
 
 export default function Manage() {
+  const {
+    query: { user },
+    push,
+  } = useRouter();
+  const loginUser = useContext(AppContext);
+  const { data, loading, error } = useMembers(loginUser?.id);
   const [selectMember, setSelectMember] = useState(null);
   const handleSelectMember = (e, member) => {
     setSelectMember(member);
+    push(`/manage${member ? `?user=${member.id}` : ""}`);
   };
+
+  useEffect(() => {
+    if (data && user) {
+      const findUser = data?.find((d) => d.id === user);
+      setSelectMember(findUser);
+    }
+  }, [data, user]);
   return (
     <>
       <PageHeader title="회원 운동 관리" />
@@ -29,6 +43,8 @@ export default function Manage() {
       <Stack spacing={2} sx={{ color: "white" }}>
         <Box>
           <UsersOfTrainer
+            data={data}
+            loading={loading}
             member={selectMember}
             handleClick={handleSelectMember}
           />
@@ -46,10 +62,8 @@ function UserChip({ name, ...props }) {
   return <Chip label={name} sx={{ mr: 2 }} variant="contained" {...props} />;
 }
 
-function UsersOfTrainer({ member, handleClick }) {
+function UsersOfTrainer({ data, loading, member, handleClick }) {
   const { push } = useRouter();
-  const user = useContext(AppContext);
-  const { data, loading, error } = useMembers(user?.id);
 
   const handleAddExercise = (e) => {
     push(`/manage/create/${member.id}`);
@@ -70,6 +84,7 @@ function UsersOfTrainer({ member, handleClick }) {
         loading={loading}
         placeholder="회원을 선택해주세요"
         options={data}
+        value={member}
         onChange={handleClick}
         getOptionLabel={({ name }) => name}
       />

@@ -1,17 +1,10 @@
-import {
-  Autocomplete,
-  Box,
-  Button,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Box, Stack, TextField, Typography } from "@mui/material";
 import { useRouter } from "next/router";
 import useMember from "../../../effects/useMember";
 import PageHeader from "../../../components/pageHeader";
 // import BluegymDatepicker from "../../../components/bluegymDatepicker";
 import BluegymPicker from "../../../components/bluegymPicker";
-import { useContext, useRef, useState } from "react";
+import { Fragment, useContext, useState } from "react";
 import { dateUtil } from "../../../utils/date";
 import useExercise from "../../../effects/useExercise";
 import AppContext from "../../../core/contexts/AppContext";
@@ -19,11 +12,13 @@ import BluegymAutocomplete from "../../../components/bluegymAutocomplete";
 import { useSnackbar } from "notistack";
 import BluegymButton from "../../../components/bluegymButton";
 import { DeleteForever } from "@mui/icons-material";
+import classNames from "classnames";
+import axios from "axios";
 
 export default function CreateTodayExercise() {
   const user = useContext(AppContext);
   const { enqueueSnackbar } = useSnackbar();
-  const { query, back } = useRouter();
+  const { query, back, push } = useRouter();
   const { memberId } = query;
   const { loading, data: member, error } = useMember(memberId);
 
@@ -62,8 +57,51 @@ export default function CreateTodayExercise() {
     setExercises([...copyExercises]);
   };
 
-  const handleSubmit = (e) => {
-    console.log(document.querySelector("."));
+  const handleTypedDescSubmit = async (e) => {
+    e.preventDefault();
+    const saveExercises = [];
+    document
+      .querySelectorAll(".today-exercise-input input")
+      .forEach(({ name, value }) => {
+        const seq = name.split("-")[3];
+        saveExercises.push({
+          seq,
+          value,
+        });
+      });
+    // console.log(memberId, user, saveExercises);
+    const info = {
+      member_id: memberId,
+      trainer_id: user.id,
+      group_name: user.group,
+      date: dateUtil.formatDate(selectedDate, "yyyy-MM-dd"),
+      exercise_type: user.data.exercise.type,
+    };
+    const d = saveExercises.map(({ seq, value }) => ({
+      ...info,
+      exercise_seq: +seq,
+      exercise_desc: value,
+    }));
+
+    try {
+      await axios.post(`/todayexercise`, d);
+
+      enqueueSnackbar("오늘의 운동 생성 성공", { variant: "success" });
+      push(`/manage?user=${memberId}`);
+    } catch (error) {
+      enqueueSnackbar("오늘의 운동 생성 실패", { variant: "error" });
+    }
+  };
+
+  const handleSubmit = () => {
+    if (!user) {
+      return;
+    }
+    if (user.data.exercise.type.toString() === "1") {
+      return handleTypedDescSubmit;
+    }
+    if (user.data.exercise.type.toString() === "2") {
+    }
   };
 
   return (
@@ -81,7 +119,7 @@ export default function CreateTodayExercise() {
           >
             취소
           </BluegymButton>
-          <BluegymButton color="primary" onClick={handleSubmit}>
+          <BluegymButton color="primary" onClick={handleSubmit()}>
             저장
           </BluegymButton>
         </Box>
@@ -162,16 +200,18 @@ function TypedDescExerciseList({ exercises, handleChange, handleDelete }) {
     <>
       <Typography>오늘의 운동 리스트</Typography>
       {exercises.map((exercise) => (
-        <>
+        <Fragment key={exercise.id}>
           <Typography fontWeight={700}>{exercise.name}</Typography>
           <Box key={exercise.seq} display="flex" alignItems="center">
             <TextField
               rows={5}
-              name={exercise.seq}
+              name={`today-exercise-input-${exercise.seq}`}
               size="small"
               fullWidth
               sx={{ mr: 10, maxWidth: 500 }}
               onChange={handleChange}
+              type="text"
+              className={classNames(`today-exercise-input`)}
             />
             <BluegymButton
               size="small"
@@ -181,7 +221,7 @@ function TypedDescExerciseList({ exercises, handleChange, handleDelete }) {
               <DeleteForever />
             </BluegymButton>
           </Box>
-        </>
+        </Fragment>
       ))}
     </>
   );
