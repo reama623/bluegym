@@ -16,6 +16,7 @@ import BluegymButton from "../../components/bluegymButton";
 import PageHeader from "../../components/pageHeader";
 import { Item } from "../../components/styleds";
 import BluegymAutocomplete from "../../components/bluegymAutocomplete";
+import useTodayExercises from "../../effects/useTodayExercises";
 
 export default function Manage() {
   const {
@@ -24,6 +25,11 @@ export default function Manage() {
   } = useRouter();
   const loginUser = useContext(AppContext);
   const { data, loading, error } = useMembers(loginUser?.id);
+  const [searchTime, setSearchTime] = useState({
+    startDate: "2022-03-01",
+    endDate: "2022-03-31",
+  });
+
   const [selectMember, setSelectMember] = useState(null);
   const handleSelectMember = (e, member) => {
     setSelectMember(member);
@@ -51,7 +57,7 @@ export default function Manage() {
         </Box>
         <Box>
           <Typography sx={{ mb: 1 }}>운동 리스트</Typography>
-          <ExercisesOfTrainer member={selectMember} />
+          <ExercisesOfTrainer member={selectMember} {...searchTime} />
         </Box>
       </Stack>
     </>
@@ -95,21 +101,29 @@ function UsersOfTrainer({ data, loading, member, handleClick }) {
   );
 }
 
-function ExercisesOfTrainer({ member }) {
+function ExercisesOfTrainer({ member, startDate, endDate }) {
+  const { data, loading, error } = useTodayExercises(
+    member,
+    startDate,
+    endDate
+  );
+  console.log(data);
   return (
     <Grid container spacing={2}>
-      <ExerciseCard />
-      <ExerciseCard />
+      {!loading && data.map((d) => <ExerciseCard key={d.key} item={d} />)}
     </Grid>
   );
 }
 
-function ExerciseCard() {
+function ExerciseCard({ item }) {
+  const { key, values } = item;
   return (
     <Grid item xs={6} sm={6} md={3} lg={3} xl={2}>
       <Item>
-        <Typography>2022-03-01의 운동</Typography>
-        <Box>운동 내용 설명</Box>
+        <Typography>{key} 운동</Typography>
+        {values.map(({ name }, i) => (
+          <Box key={i}>{name}</Box>
+        ))}
       </Item>
     </Grid>
   );

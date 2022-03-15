@@ -6,6 +6,7 @@ const connection = mysql.createConnection({
   user: "bluegymadmin",
   password: "1352759",
   database: "bluegym",
+  
 });
 
 export const request = async (q, params) => {

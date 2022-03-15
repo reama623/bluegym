@@ -5,7 +5,7 @@ export default async function handler(req, res) {
   const { query, method, body } = req;
 
   if (method === "GET") {
-    const d = await selectTodayExeriseOfUser(query)
+    const d = await selectTodayExeriseOfUser(query);
     return res.status(200).json(d);
   }
 
@@ -24,7 +24,7 @@ const selectTodayExeriseOfUser = async ({
   start_date,
   end_date,
 }) => {
-  const q = `select te.seq, te.date,e.name, te.exercise_desc from today_exercise te join exercise e on e.seq = te.exercise_seq where member_id=? and te.trainer_id=? and group_name=? and date between ? and ?`;
+  const q = `select te.seq, te.date,e.name, te.date, te.exercise_desc from today_exercise te join exercise e on e.seq = te.exercise_seq where member_id=? and te.trainer_id=? and group_name=? and date between ? and ?`;
   const d = await request(q, [
     member_id,
     trainer_id,
