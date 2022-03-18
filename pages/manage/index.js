@@ -1,11 +1,10 @@
 import {
-  Autocomplete,
   Box,
   Button,
+  ButtonGroup,
   Chip,
   Grid,
   Stack,
-  TextField,
   Typography,
 } from "@mui/material";
 import { useRouter } from "next/router";
@@ -17,6 +16,9 @@ import PageHeader from "../../components/pageHeader";
 import { Item } from "../../components/styleds";
 import BluegymAutocomplete from "../../components/bluegymAutocomplete";
 import useTodayExercises from "../../effects/useTodayExercises";
+import { getMonth, getWeek } from "date-fns";
+// import BluegymPicker from "../../components/bluegymPicker";
+import { dateUtil } from "../../utils/date";
 
 export default function Manage() {
   const {
@@ -26,14 +28,30 @@ export default function Manage() {
   const loginUser = useContext(AppContext);
   const { data, loading, error } = useMembers(loginUser?.id);
   const [searchTime, setSearchTime] = useState({
-    startDate: "2022-03-01",
-    endDate: "2022-03-31",
+    start: "2022-03-01",
+    end: "2022-03-31",
   });
 
   const [selectMember, setSelectMember] = useState(null);
   const handleSelectMember = (e, member) => {
     setSelectMember(member);
     push(`/manage${member ? `?user=${member.id}` : ""}`);
+  };
+
+  const [range, setRange] = useState("month");
+  const handleSelectRange = (r) => {
+    let dateRange = dateUtil.getRangeOfMonth(
+      getMonth(new Date()),
+      "yyyy-MM-dd"
+    );
+    if (r === "week") {
+      dateRange = dateUtil.getRangeOfWeek(
+        getWeek(new Date() - 1),
+        "yyyy-MM-dd"
+      );
+    }
+    setRange(r);
+    setSearchTime(dateRange);
   };
 
   useEffect(() => {
@@ -56,10 +74,41 @@ export default function Manage() {
           />
         </Box>
         <Box>
+          <SelectRange range={range} handleClick={handleSelectRange} />
+        </Box>
+        <Box>
           <Typography sx={{ mb: 1 }}>운동 리스트</Typography>
           <ExercisesOfTrainer member={selectMember} {...searchTime} />
         </Box>
       </Stack>
+    </>
+  );
+}
+
+function SelectRange({ range, handleClick }) {
+  return (
+    <>
+      <Typography>일자 선택</Typography>
+      <ButtonGroup variant="contained">
+        <Button
+          color={range === "month" ? "secondary" : "primary"}
+          onClick={(e) => handleClick("month")}
+        >
+          이번 달({getMonth(new Date()) + 1}월)
+        </Button>
+        <Button
+          color={range === "week" ? "secondary" : "primary"}
+          onClick={(e) => handleClick("week")}
+        >
+          이번 주({getWeek(new Date()) - 1}주차)
+        </Button>
+        {/* <Button
+          color={range === "range" ? "secondary" : "primary"}
+          onClick={(e) => handleClick("range")}
+        >
+          범위 선택
+        </Button> */}
+      </ButtonGroup>
     </>
   );
 }
@@ -101,27 +150,48 @@ function UsersOfTrainer({ data, loading, member, handleClick }) {
   );
 }
 
-function ExercisesOfTrainer({ member, startDate, endDate }) {
+function ExercisesOfTrainer({ member, start: startDate, end: endDate }) {
   const { data, loading, error } = useTodayExercises(
     member,
     startDate,
     endDate
   );
-  console.log(data);
   return (
     <Grid container spacing={2}>
       {!loading && data.map((d) => <ExerciseCard key={d.key} item={d} />)}
+      {!data.length && <ExerciseCard />}
     </Grid>
   );
 }
 
 function ExerciseCard({ item }) {
+  if (!item) {
+    return (
+      <Grid item xs={6} sm={6} md={3} lg={3} xl={2}>
+        <Item
+          sx={{
+            minHeight: 200,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Typography>회원을 선택해주세요</Typography>
+        </Item>
+      </Grid>
+    );
+  }
   const { key, values } = item;
   return (
     <Grid item xs={6} sm={6} md={3} lg={3} xl={2}>
-      <Item>
-        <Typography>{key} 운동</Typography>
-        {values.map(({ name }, i) => (
+      <Item sx={{ minHeight: 200 }}>
+        <Typography>
+          <Box component="span" sx={{ fontWeight: 700 }}>
+            {key}
+          </Box>{" "}
+          운동
+        </Typography>
+        {values?.map(({ name }, i) => (
           <Box key={i}>{name}</Box>
         ))}
       </Item>
