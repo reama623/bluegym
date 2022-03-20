@@ -3,14 +3,14 @@ import { chain } from "lodash";
 import { useContext } from "react";
 import useSWR from "swr";
 import AppContext from "../core/contexts/AppContext";
-import { dateUtil } from "../utils/date";
+import { formatDate } from "../utils/date";
 
 async function getExercises(_, memberId, { id, group }, startDate, endDate) {
   const { data } = await axios.get(
-    `/todayexercise?member_id=${memberId}&trainer_id=${id}&group_name=${group}&start_date=${dateUtil.formatDate(
+    `/todayexercise?member_id=${memberId}&trainer_id=${id}&group_name=${group}&start_date=${formatDate(
       startDate,
       "yyyy-MM-dd"
-    )}&end_date=${dateUtil.formatDate(endDate, "yyyy-MM-dd")}`
+    )}&end_date=${formatDate(endDate, "yyyy-MM-dd")}`
   );
   return data;
 }
@@ -18,7 +18,9 @@ async function getExercises(_, memberId, { id, group }, startDate, endDate) {
 export default function useTodayExercises(member, startDate, endDate) {
   const user = useContext(AppContext);
   const { data, error } = useSWR(
-    member ? [`getTodayExercises`, member.id, user, startDate, endDate] : null,
+    member && endDate
+      ? [`getTodayExercises`, member.id, user, startDate, endDate]
+      : null,
     getExercises
   );
   return {
@@ -33,7 +35,7 @@ function filteringData(data) {
     .map((d, i) => {
       return {
         ...d,
-        date: dateUtil.formatDate(new Date(d.date), "yyyy-MM-dd"),
+        date: formatDate(new Date(d.date), "yyyy-MM-dd"),
       };
     })
     .groupBy("date")

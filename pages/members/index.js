@@ -2,7 +2,7 @@ import { Box, Button, Stack, Typography } from "@mui/material";
 import { useContext, useState } from "react";
 import AppContext from "../../core/contexts/AppContext";
 import useMembers from "../../effects/useMembers";
-import { dateUtil } from "../../utils/date";
+import { formatDate } from "../../utils/date";
 import BluegymTable from "../../components/BluegymTable";
 import PageHeader from "../../components/pageHeader";
 import MemberModal from "./components/memberModal";
@@ -15,7 +15,7 @@ const columns = [
     label: "등록일",
     minWidth: 170,
     align: "center",
-    format: (value) => dateUtil.formatDate(value),
+    format: (value) => formatDate(value),
     type: "date",
   },
 ];

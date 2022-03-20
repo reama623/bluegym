@@ -2,6 +2,8 @@ import {
   endOfMonth,
   endOfWeek,
   format,
+  getMonth,
+  getWeek,
   setMonth,
   setWeek,
   startOfMonth,
@@ -11,15 +13,15 @@ import { ko } from "date-fns/locale";
 
 const locale = ko;
 
-function today() {
-  return format(new Date(), "PPP", { locale });
+export function today(formatString = "PPP") {
+  return format(new Date(), formatString, { locale });
 }
 
-function formatDate(date, formatString = "yyyy-MM-dd") {
+export function formatDate(date, formatString = "yyyy-MM-dd") {
   return format(new Date(date), formatString);
 }
 
-function getRangeOfMonth(month, formatString) {
+export function getRangeOfMonth(month, formatString) {
   const monthDate = setMonth(new Date(), month);
   const start = formatString
     ? format(startOfMonth(monthDate), formatString)
@@ -30,7 +32,7 @@ function getRangeOfMonth(month, formatString) {
   return { start, end };
 }
 
-function getRangeOfWeek(week, formatString) {
+export function getRangeOfWeek(week, formatString) {
   const weekDate = setWeek(new Date(), week);
   const start = formatString
     ? format(startOfWeek(weekDate), formatString)
@@ -41,9 +43,10 @@ function getRangeOfWeek(week, formatString) {
   return { start, end };
 }
 
-export const dateUtil = {
-  today,
-  formatDate,
-  getRangeOfMonth,
-  getRangeOfWeek,
-};
+export function getRangeOfThisWeek(formatString) {
+  return getRangeOfWeek(getWeek(new Date()), formatString);
+}
+
+export function getRangeOfThisMonth(formatString) {
+  return getRangeOfMonth(getMonth(new Date()), formatString);
+}

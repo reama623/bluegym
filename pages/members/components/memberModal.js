@@ -11,7 +11,7 @@ import { useSnackbar } from "notistack";
 import { useContext, useEffect, useState } from "react";
 import { useSWRConfig } from "swr";
 import AppContext from "../../../core/contexts/AppContext";
-import { dateUtil } from "../../../utils/date";
+import { formatDate } from "../../../utils/date";
 import BluegymButton from "../../../components/bluegymButton";
 import { modalStyle } from "../../../components/styleds";
 
@@ -64,7 +64,11 @@ export default function UserModal({ modal, handleClose, handleModal }) {
       return true;
     }
     try {
-      await axios.post(`/member`, { name, group: user.group, trainer: user.id });
+      await axios.post(`/member`, {
+        name,
+        group: user.group,
+        trainer: user.id,
+      });
       enqueueSnackbar("회원 생성 성공", { variant: "success" });
       closeProcess();
     } catch (error) {
@@ -202,7 +206,7 @@ function UserView({ user }) {
         <UserViewItem title="사용자 이름" text={user.name} />
         <UserViewItem
           title="사용자 등록일"
-          text={dateUtil.formatDate(user.created_at)}
+          text={formatDate(user.created_at)}
         />
         <UserViewItem title="사용자 소속" text={user.group} />
       </Stack>

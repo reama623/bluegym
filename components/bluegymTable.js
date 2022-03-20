@@ -9,6 +9,7 @@ import {
   TablePagination,
   TableRow,
 } from "@mui/material";
+import { formatDate } from "../utils/date";
 
 export default function BluegymTable({
   loading,
@@ -34,7 +35,7 @@ export default function BluegymTable({
       formatString += "THH:mm:ss";
     }
 
-    return dateUtil.formatDate(date, formatString);
+    return formatDate(date, formatString);
   };
 
   return (

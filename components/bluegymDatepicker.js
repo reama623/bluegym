@@ -1,30 +1,37 @@
-import { Button } from "@mui/material";
-import { forwardRef } from "react";
+import { Popover } from "@mui/material";
+import { useState } from "react";
 import DatePicker from "react-datepicker";
 
 import "react-datepicker/dist/react-datepicker.css";
+import { Item } from "./styleds";
 
 export default function BluegymDatepicker({
-  startDate = new Date(),
+  open,
+  handleClose,
+  anchorEl,
+  pickerOption,
+  startDate,
+  endDate,
   handleChange,
-  type,
 }) {
-  const CustomInputComponent = forwardRef(({ value, onClick }, ref) => (
-    // <ButtonComponent ref={ref} />
-    // <DateButton date={startDate} onClick={onClick} ref={ref}>
-    //   {value}
-    // </DateButton>
-    <Button ref={ref} onClick={onClick}>
-      {value}
-    </Button>
-  ));
-  CustomInputComponent.displayName = "CustomInput";
-
   return (
-    <DatePicker
-      selected={startDate}
-      onChange={handleChange}
-      customInput={<CustomInputComponent />}
-    />
+    <Popover
+      open={open}
+      anchorEl={anchorEl}
+      onClose={handleClose}
+      anchorOrigin={{
+        vertical: "bottom",
+        horizontal: "left",
+      }}
+    >
+      <Item>
+        {/* <DatePicker {...pickerOption} /> */}
+        <DatePicker
+          {...pickerOption}
+          startDate={startDate}
+          endDate={endDate}
+        />
+      </Item>
+    </Popover>
   );
 }
