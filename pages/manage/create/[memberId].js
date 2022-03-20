@@ -5,7 +5,7 @@ import PageHeader from "../../../components/pageHeader";
 // import BluegymDatepicker from "../../../components/bluegymDatepicker";
 import BluegymPicker from "../../../components/bluegymPicker";
 import { Fragment, useContext, useState } from "react";
-import { dateUtil } from "../../../utils/date";
+import { formatDate } from "../../../utils/date";
 import useExercise from "../../../effects/useExercise";
 import AppContext from "../../../core/contexts/AppContext";
 import BluegymAutocomplete from "../../../components/bluegymAutocomplete";
@@ -28,7 +28,6 @@ export default function CreateTodayExercise() {
   };
 
   const [exercises, setExercises] = useState([]);
-
   const handleExerciseClick = (e, exercise) => {
     if (!exercise) {
       return;
@@ -43,10 +42,14 @@ export default function CreateTodayExercise() {
 
   const handleTypedDescChange = (e) => {
     const { name, value } = e.target;
-    // const findExercise = exercises.find(
-    //   (exercise) => name === exercise.seq.toString()
-    // );
-    // findExercise.value = value;
+    const seq = name.split("-")[3];
+    const copyExercises = [...exercises];
+    const findExerciseIndex = copyExercises.findIndex(
+      (exercise) => exercise.seq === +seq
+    );
+    copyExercises[findExerciseIndex].value = value;
+
+    setExercises([...copyExercises]);
   };
   const handleTypedDescDelete = (e, exercise) => {
     const copyExercises = [...exercises];
@@ -74,7 +77,7 @@ export default function CreateTodayExercise() {
       member_id: memberId,
       trainer_id: user.id,
       group_name: user.group,
-      date: dateUtil.formatDate(selectedDate, "yyyy-MM-dd"),
+      date: formatDate(selectedDate, "yyyy-MM-dd"),
       exercise_type: user.data.exercise.type,
     };
     const d = saveExercises.map(({ seq, value }) => ({
@@ -127,7 +130,7 @@ export default function CreateTodayExercise() {
           <Typography sx={{ mb: 1 }}>일자 선택</Typography>
           {/* <BluegymDatepicker /> */}
           <BluegymPicker
-            value={dateUtil.formatDate(selectedDate, "yyyy-MM-dd")}
+            value={formatDate(selectedDate, "yyyy-MM-dd")}
             onChange={handleDate}
           />
         </Box>
@@ -200,7 +203,7 @@ function TypedDescExerciseList({ exercises, handleChange, handleDelete }) {
     <>
       <Typography>오늘의 운동 리스트</Typography>
       {exercises.map((exercise) => (
-        <Fragment key={exercise.id}>
+        <Fragment key={exercise.seq}>
           <Typography fontWeight={700}>{exercise.name}</Typography>
           <Box key={exercise.seq} display="flex" alignItems="center">
             <TextField
@@ -210,6 +213,7 @@ function TypedDescExerciseList({ exercises, handleChange, handleDelete }) {
               fullWidth
               sx={{ mr: 10, maxWidth: 500 }}
               onChange={handleChange}
+              value={exercise.value}
               type="text"
               className={classNames(`today-exercise-input`)}
             />
