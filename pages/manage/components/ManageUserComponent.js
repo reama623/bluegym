@@ -12,7 +12,7 @@ export default function ManageUserComponent({
   const { push } = useRouter();
 
   const handleAddExercise = (e) => {
-    push(`/manage/create/${member.id}`);
+    push(`/manage/edit/${member.id}`);
   };
   return (
     <Stack direction="row" spacing={2}>

@@ -35,6 +35,7 @@ export default function Manage() {
     setStartTime(start);
     setEndTime(end);
   };
+  
   return (
     <>
       <PageHeader title="회원 운동 관리" />

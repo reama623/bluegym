@@ -9,8 +9,8 @@ async function getExercises(_, memberId, { id, group }, startDate, endDate) {
   const { data } = await axios.get(
     `/todayexercise?member_id=${memberId}&trainer_id=${id}&group_name=${group}&start_date=${formatDate(
       startDate,
-      "yyyy-MM-dd"
-    )}&end_date=${formatDate(endDate, "yyyy-MM-dd")}`
+      "yyyy-MM-dd 00:00:00"
+    )}&end_date=${formatDate(endDate, "yyyy-MM-dd 23:59:59")}`
   );
   return data;
 }

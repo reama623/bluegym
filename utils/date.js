@@ -17,7 +17,10 @@ export function today(formatString = "PPP") {
   return format(new Date(), formatString, { locale });
 }
 
-export function formatDate(date, formatString = "yyyy-MM-dd") {
+export function formatDate(
+  date = today("yyyy-MM-dd"),
+  formatString = "yyyy-MM-dd"
+) {
   return format(new Date(date), formatString);
 }
 
