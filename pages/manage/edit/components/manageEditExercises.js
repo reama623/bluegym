@@ -10,7 +10,7 @@ export default function TypedExerciseList({
   handleTypedDescChange,
   handleTypedDescDelete,
 }) {
-  const { id, data } = trainer;
+  const { data } = trainer;
   if (data.exercise.type?.toString() === "1" && exercises?.length) {
     return (
       <>
@@ -40,7 +40,7 @@ function TypedDescExerciseList({ exercises, handleChange, handleDelete }) {
               fullWidth
               sx={{ mr: 10, maxWidth: 500 }}
               onChange={handleChange}
-              value={exercise.value}
+              value={exercise.exercise_desc}
               type="text"
               className={classNames(`today-exercise-input`)}
             />

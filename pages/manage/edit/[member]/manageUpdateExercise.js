@@ -1,45 +1,37 @@
+import axios from "axios";
 import { useRouter } from "next/router";
+import { useSnackbar } from "notistack";
 import { useEffect } from "react";
 import PageHeader from "../../../../components/pageHeader";
 import useTodayExercises from "../../../../effects/useTodayExercises";
 import ManageExercise from "./manageExercise";
 
-export default function ManageUpdateExercise({
-  member,
-  handleExercises,
-  exercises,
-  selectedDate,
-  handleSelectedDate,
-  handleAutocompleteClick,
-  handleExerciseChange,
-  handleExerciseDelete,
-}) {
-  const { query } = useRouter();
+export default function ManageUpdateExercise({ member }) {
+  const { push, query } = useRouter();
+  const { enqueueSnackbar } = useSnackbar();
   const { data, loading, error } = useTodayExercises(
     member,
     query?.date,
     query?.date
   );
-  // console.log("update--", loading, data, exercises);
-  useEffect(() => {
-    if (!loading) {
-      handleExercises(data[0]?.values);
-    }
-  }, [loading]);
 
-  const handleSubmit = () => {};
+  const handleSubmit = async (data) => {
+    try {
+      await axios.patch(`/todayexercise`, data);
+
+      enqueueSnackbar("오늘의 운동 수정 성공", { variant: "success" });
+      push(`/manage?user=${member.id}`);
+    } catch (error) {
+      enqueueSnackbar("오늘의 운동 수정 실패", { variant: "error" });
+    }
+  };
   return (
     <>
       <PageHeader title="오늘의 운동 수정" />
       <ManageExercise
         member={member}
-        handleExercises={handleExercises}
-        exercises={exercises}
-        selectedDate={selectedDate}
-        handleSelectedDate={handleSelectedDate}
-        handleAutocompleteClick={handleAutocompleteClick}
-        handleExerciseChange={handleExerciseChange}
-        handleExerciseDelete={handleExerciseDelete}
+        loading={loading}
+        userExercises={data}
         handleSubmit={handleSubmit}
       />
     </>

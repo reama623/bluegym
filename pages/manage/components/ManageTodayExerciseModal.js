@@ -45,7 +45,7 @@ export default function ManageTodayExerciseModal({ modal, handleClose }) {
           >
             수정
           </BluegymButton>
-          <BluegymButton>닫기</BluegymButton>
+          <BluegymButton onClick={handleClose}>닫기</BluegymButton>
         </Stack>
       </Box>
       {/* <ConfirmModal modal={childModal} handleClose={handleCloseChildModal} /> */}
