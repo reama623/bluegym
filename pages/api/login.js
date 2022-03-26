@@ -5,7 +5,7 @@ import { request } from "../../db";
 export default async function handler(req, res) {
   const { method, body, ...rest } = req;
   if (method === "GET") {
-    const d = await request("select * from user");
+    const d = await request("select * from trainer");
     return res.status(200).json(d);
   }
   if (method === "POST") {

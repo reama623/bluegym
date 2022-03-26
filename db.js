@@ -1,12 +1,9 @@
 import mysql from "mysql2";
+import { config } from "./core/config";
 
 // create the connection to database
 const connection = mysql.createConnection({
-  host: "localhost",
-  user: "bluegymadmin",
-  password: "1352759",
-  database: "bluegym",
-  
+  ...config.db,
 });
 
 export const request = async (q, params) => {
