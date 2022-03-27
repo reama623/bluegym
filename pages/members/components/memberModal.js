@@ -50,7 +50,7 @@ export default function UserModal({ modal, handleClose, handleModal }) {
       return true;
     }
     try {
-      await axios.patch(`/member/${modal.item.id}`, { name });
+      await axios.patch(`/member/${modal?.item.id}`, { name });
       enqueueSnackbar("회원 수정 성공", { variant: "success" });
       closeProcess();
     } catch (error) {
@@ -78,7 +78,7 @@ export default function UserModal({ modal, handleClose, handleModal }) {
 
   const handleUserDelete = async (e) => {
     try {
-      await axios.delete(`/member/${modal.item.id}`);
+      await axios.delete(`/member/${modal?.item.id}`);
       enqueueSnackbar("회원 삭제 성공", { variant: "success" });
       closeProcess();
     } catch (error) {
@@ -87,35 +87,35 @@ export default function UserModal({ modal, handleClose, handleModal }) {
   };
 
   const handleSubmitFunc = () => {
-    if (modal.type === "update") {
+    if (modal?.type === "update") {
       return handleSubmitUpdate;
     }
-    if (modal.type === "create") {
+    if (modal?.type === "create") {
       return handleSubmitCreate;
     }
   };
 
   useEffect(() => {
-    if (modal.type === "update") {
-      const { name } = modal.item;
+    if (modal?.type === "update") {
+      const { name } = modal?.item;
       setName(name);
     }
-    if (!modal.open) {
+    if (!modal?.open) {
       initializeState();
     }
   }, [modal]);
 
   return (
     <Modal
-      open={modal.open}
+      open={modal?.open}
       onClose={() => handleClose()}
-      aria-labelledby={`user-${modal.type}-modal`}
+      aria-labelledby={`user-${modal?.type}-modal`}
       // aria-describedby="modal-modal-description"
     >
       <form onSubmit={handleSubmitFunc()}>
         <Box sx={modalStyle}>
-          {modal.type === "view" && <UserView user={modal.item} />}
-          {modal.type === "create" && (
+          {modal?.type === "view" && <UserView user={modal?.item} />}
+          {modal?.type === "create" && (
             <>
               <Typography color="white" sx={{ mb: 2 }}>
                 회원 추가
@@ -123,20 +123,20 @@ export default function UserModal({ modal, handleClose, handleModal }) {
               <UserCreateView name={name} handleChange={handleNameChange} />
             </>
           )}
-          {modal.type === "update" && (
+          {modal?.type === "update" && (
             <>
               <Typography color="white" sx={{ mb: 2 }}>
-                {modal.item.name} 회원 수정
+                {modal?.item.name} 회원 수정
               </Typography>
               <UserUpdateView
-                user={modal.item}
+                user={modal?.item}
                 name={name}
                 handleChange={handleNameChange}
               />
             </>
           )}
           <Stack direction="row">
-            {modal.type === "view" && (
+            {modal?.type === "view" && (
               <>
                 <BluegymButton color="error" onClick={handleUserDelete}>
                   삭제
@@ -153,7 +153,7 @@ export default function UserModal({ modal, handleClose, handleModal }) {
                 </BluegymButton>
               </>
             )}
-            {modal.type === "update" && (
+            {modal?.type === "update" && (
               <>
                 <BluegymButton
                   color="warning"
@@ -174,7 +174,7 @@ export default function UserModal({ modal, handleClose, handleModal }) {
                 </BluegymButton> */}
               </>
             )}
-            {modal.type === "create" && (
+            {modal?.type === "create" && (
               <>
                 <BluegymButton
                   color="warning"

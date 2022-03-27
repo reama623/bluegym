@@ -1,11 +1,4 @@
-import {
-  Box,
-  Button,
-  Modal,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Box, Modal, Stack, TextField, Typography } from "@mui/material";
 import axios from "axios";
 import { useSnackbar } from "notistack";
 import { useContext, useEffect, useState } from "react";
@@ -89,7 +82,7 @@ export default function ExerciseModal({ modal, handleModal, handleClose }) {
     e.preventDefault();
     try {
       const data = {
-        seq: modal.item.seq,
+        seq: modal?.item.seq,
         name: title,
         desc: description,
         category,
@@ -105,22 +98,22 @@ export default function ExerciseModal({ modal, handleModal, handleClose }) {
   };
 
   useEffect(() => {
-    if (modal.type === "update") {
-      const { name, desc, category } = modal.item;
+    if (modal?.type === "update") {
+      const { name, desc, category } = modal?.item;
       setTitle(name);
       setDescription(desc);
       setCategory(category);
     }
-    if (!modal.open) {
+    if (!modal?.open) {
       initializeState();
     }
   }, [modal]);
 
   const handleSubmit = (e) => {
-    if (modal.type === "create") {
+    if (modal?.type === "create") {
       return handleCreateExercise;
     }
-    if (modal.type === "update") {
+    if (modal?.type === "update") {
       return handleUpdateExercise;
     }
   };
@@ -130,7 +123,7 @@ export default function ExerciseModal({ modal, handleModal, handleClose }) {
   };
   return (
     <Modal
-      open={modal.open}
+      open={modal?.open}
       onClose={() => handleClose()}
       aria-labelledby="exercise-create-modal"
       // aria-describedby="modal-modal-description"
@@ -142,19 +135,19 @@ export default function ExerciseModal({ modal, handleModal, handleClose }) {
           component="h2"
           sx={{ color: "white" }}
         >
-          {modal.type === "create" && "운동 생성"}
-          {modal.type === "update" && "운동 수정"}
+          {modal?.type === "create" && "운동 생성"}
+          {modal?.type === "update" && "운동 수정"}
         </Typography>
         <form onSubmit={handleSubmit()}>
-          {modal.type === "view" && (
+          {modal?.type === "view" && (
             <ExerciseModalDisplay
-              title={modal.item.name}
-              description={modal.item.desc}
-              category={modal.item.category}
+              title={modal?.item.name}
+              description={modal?.item.desc}
+              category={modal?.item.category}
               // handleUpdateView={handleUpdateView}
             />
           )}
-          {(modal.type === "update" || modal.type === "create") && (
+          {(modal?.type === "update" || modal?.type === "create") && (
             <ExerciseModalUpdateView
               title={title}
               description={description}
@@ -166,7 +159,7 @@ export default function ExerciseModal({ modal, handleModal, handleClose }) {
           )}
 
           <Stack direction="row" justifyContent="flex-end" sx={{ mt: 2 }}>
-            {modal.type === "update" && (
+            {modal?.type === "update" && (
               <>
                 <BluegymButton
                   color="error"
@@ -178,7 +171,7 @@ export default function ExerciseModal({ modal, handleModal, handleClose }) {
                 <BluegymButton type="submit">저장</BluegymButton>
               </>
             )}
-            {modal.type === "create" && (
+            {modal?.type === "create" && (
               <>
                 <BluegymButton color="error" sx={{ mr: 2 }}>
                   취소
@@ -187,11 +180,11 @@ export default function ExerciseModal({ modal, handleModal, handleClose }) {
               </>
             )}
 
-            {modal.type === "view" && (
+            {modal?.type === "view" && (
               <>
                 <BluegymButton
                   color="warning"
-                  onClick={(e) => handleDeleteExercise(e, modal.item)}
+                  onClick={(e) => handleDeleteExercise(e, modal?.item)}
                 >
                   삭제
                 </BluegymButton>

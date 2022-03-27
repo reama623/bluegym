@@ -9,7 +9,7 @@ export default function ManageExercisesComponent({
   start: startDate,
   end: endDate,
 }) {
-  const { data, loading, error } = useTodayExercises(
+  const { data, loading } = useTodayExercises(
     member,
     startDate,
     endDate

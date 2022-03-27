@@ -10,8 +10,7 @@ export default function TypedExerciseList({
   handleTypedDescChange,
   handleTypedDescDelete,
 }) {
-  const { data } = trainer;
-  if (data.exercise.type?.toString() === "1" && exercises?.length) {
+  if (trainer?.data.exercise.type?.toString() === "1" && exercises?.length) {
     return (
       <>
         <TypedDescExerciseList

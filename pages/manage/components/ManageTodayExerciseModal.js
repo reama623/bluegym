@@ -5,14 +5,13 @@ import { modalStyle } from "../../../components/styleds";
 
 export default function ManageTodayExerciseModal({ modal, handleClose }) {
   const { push } = useRouter();
-  const { open, member, item } = modal;
 
   const redirectUpdate = () => {
-    push(`/manage/edit/${member.id}?date=${item.key}`);
+    push(`/manage/edit/${member.id}?date=${modal?.item.key}`);
   };
   return (
     <Modal
-      open={open}
+      open={modal?.open}
       onClose={() => handleClose()}
       aria-labelledby="exercise-create-modal"
       // aria-describedby="modal-modal-description"
@@ -24,10 +23,10 @@ export default function ManageTodayExerciseModal({ modal, handleClose }) {
           component="h2"
           sx={{ color: "white", mb: 2 }}
         >
-          {member.name} 회원 | {item.key} 운동
+          {modal?.member.name} 회원 | {modal?.item.key} 운동
         </Typography>
         <Stack color="white" spacing={1}>
-          {item.values.map((value) => {
+          {modal?.item.values.map((value) => {
             return (
               <Box key={value.seq}>
                 <Typography fontWeight={600}>{value.name}</Typography>
